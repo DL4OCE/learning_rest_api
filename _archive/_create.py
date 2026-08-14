@@ -1,0 +1,643 @@
+import json
+
+openapi_spec = {
+    "openapi": "3.1.0",
+    "info": {
+        "title": "E-Commerce User & Order Management API",
+        "description": "Eine professionelle Demo-API zur Verwaltung von Benutzern, Bestellungen, Produkten und Metriken im Rahmen des API-First Workflow-Designs.",
+        "version": "1.0.0",
+        "contact": {
+            "name": "API Support Team",
+            "email": "api-support@example.com",
+            "url": "https://developer.example.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        }
+    },
+    "servers": [
+        {
+            "url": "https://api-dev.example.com/v1",
+            "description": "Test / Development Server"
+        },
+        {
+            "url": "https://api-staging.example.com/v1",
+            "description": "Qualitätsverifikation / Staging Server"
+        },
+        {
+            "url": "https://api.example.com/v1",
+            "description": "Produktionsserver (Live)"
+        }
+    ],
+    "paths": {
+        "/users": {
+            "get": {
+                "summary": "Liste aller Benutzer abrufen",
+                "description": "Gibt eine paginierte Liste registrierter Benutzer zurück.",
+                "operationId": "getUsers",
+                "tags": ["Users"],
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Anzahl der zurückzugebenden Elemente (Standard: 20)",
+                        "required": False,
+                        "schema": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 100
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "description": "Versatz für Paginierung",
+                        "required": False,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste der Benutzer erfolgreich abgerufen",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/User"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError"
+                    },
+                    "500": {
+                        "$ref": "#/components/responses/InternalServerError"
+                    }
+                }
+            },
+            "post": {
+                "summary": "Neuen Benutzer anlegen",
+                "description": "Erstellt ein neues Benutzerkonto im System.",
+                "operationId": "createUser",
+                "tags": ["Users"],
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Benutzer erfolgreich erstellt",
+                        "headers": {
+                            "Location": {
+                                "description": "URI des neu erstellten Benutzers",
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationError"
+                    }
+                }
+            }
+        },
+        "/users/{userId}": {
+            "get": {
+                "summary": "Benutzer nach ID abrufen",
+                "description": "Liefert die Details eines spezifischen Benutzers anhand seiner UUID.",
+                "operationId": "getUserById",
+                "tags": ["Users"],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": True,
+                        "description": "Eindeutige UUID des Benutzers",
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Benutzer gefunden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFoundError"
+                    }
+                }
+            },
+            "put": {
+                "summary": "Benutzer vollständig aktualisieren",
+                "description": "Ersetzt die Stammdaten eines bestehenden Benutzers.",
+                "operationId": "updateUser",
+                "tags": ["Users"],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": True,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UserCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Benutzer erfolgreich aktualisiert",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/User"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFoundError"
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Benutzer löschen",
+                "description": "Entfernt einen Benutzer dauerhaft aus dem System.",
+                "operationId": "deleteUser",
+                "tags": ["Users"],
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": True,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Benutzer erfolgreich gelöscht"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFoundError"
+                    }
+                }
+            }
+        },
+        "/products": {
+            "get": {
+                "summary": "Produktkatalog durchsuchen",
+                "description": "Ruft alle verfügbaren Produkte im Katalog ab.",
+                "operationId": "getProducts",
+                "tags": ["Products"],
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "required": False,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Erfolgreiche Produktabfrage",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Product"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/products/{productId}": {
+            "get": {
+                "summary": "Einzelnes Produkt abrufen",
+                "description": "Liefert die Einzelheiten eines spezifischen Produkts.",
+                "operationId": "getProductById",
+                "tags": ["Products"],
+                "parameters": [
+                    {
+                        "name": "productId",
+                        "in": "path",
+                        "required": True,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Produkt gefunden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Product"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFoundError"
+                    }
+                }
+            }
+        },
+        "/orders": {
+            "get": {
+                "summary": "Bestellungen auflisten",
+                "description": "Ruft alle Bestellungen ab (gefiltert nach Status oder Kunde).",
+                "operationId": "getOrders",
+                "tags": ["Orders"],
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "required": False,
+                        "schema": {
+                            "type": "string",
+                            "enum": ["pending", "processing", "shipped", "delivered", "cancelled"]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bestellungsübersicht erfolgreich abgerufen",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Order"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Neue Bestellung aufgeben",
+                "description": "Erstellt eine neue Bestellung im System.",
+                "operationId": "createOrder",
+                "tags": ["Orders"],
+                "requestBody": {
+                    "required": True,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OrderCreate"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Bestellung erfolgreich aufgegeben",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "$ref": "#/components/responses/BadRequestError"
+                    }
+                }
+            }
+        },
+        "/orders/{orderId}": {
+            "get": {
+                "summary": "Bestellungsdetails abrufen",
+                "description": "Gibt Details zu einer konkreten Bestellung zurück.",
+                "operationId": "getOrderById",
+                "tags": ["Orders"],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "required": True,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Bestellung gefunden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Order"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFoundError"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "type": "object",
+                "required": ["id", "username", "email", "createdAt"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "johndoe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-08-13T08:30:00Z"
+                    }
+                }
+            },
+            "UserCreate": {
+                "type": "object",
+                "required": ["username", "email"],
+                "properties": {
+                    "username": {
+                        "type": "string",
+                        "minLength": 3,
+                        "maxLength": 30,
+                        "example": "johndoe"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "john.doe@example.com"
+                    },
+                    "firstName": {
+                        "type": "string",
+                        "example": "John"
+                    },
+                    "lastName": {
+                        "type": "string",
+                        "example": "Doe"
+                    }
+                }
+            },
+            "Product": {
+                "type": "object",
+                "required": ["id", "title", "price", "currency", "sku"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "b5c1a8d0-1234-5678-90ab-cdef12345678"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Ergonomische Tastatur"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Kabellose Tastatur mit geteiltem Tastenfeld."
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 129.99
+                    },
+                    "currency": {
+                        "type": "string",
+                        "example": "EUR"
+                    },
+                    "sku": {
+                        "type": "string",
+                        "example": "KB-ERG-01"
+                    }
+                }
+            },
+            "Order": {
+                "type": "object",
+                "required": ["id", "userId", "items", "totalAmount", "status", "createdAt"],
+                "properties": {
+                    "id": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "c9f8a7b6-5432-10fe-dcba-9876543210fe"
+                    },
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    },
+                    "totalAmount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 259.98
+                    },
+                    "status": {
+                        "type": "string",
+                        "enum": ["pending", "processing", "shipped", "delivered", "cancelled"],
+                        "example": "processing"
+                    },
+                    "createdAt": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-08-13T08:45:00Z"
+                    }
+                }
+            },
+            "OrderItem": {
+                "type": "object",
+                "required": ["productId", "quantity", "unitPrice"],
+                "properties": {
+                    "productId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "b5c1a8d0-1234-5678-90ab-cdef12345678"
+                    },
+                    "quantity": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 2
+                    },
+                    "unitPrice": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 129.99
+                    }
+                }
+            },
+            "OrderCreate": {
+                "type": "object",
+                "required": ["userId", "items"],
+                "properties": {
+                    "userId": {
+                        "type": "string",
+                        "format": "uuid",
+                        "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItem"
+                        }
+                    }
+                }
+            },
+            "ApiError": {
+                "type": "object",
+                "required": ["type", "title", "status", "detail"],
+                "description": "Standardisiertes Fehlerformat angelehnt an RFC 7807 (Problem Details).",
+                "properties": {
+                    "type": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "https://api.example.com/errors/not-found"
+                    },
+                    "title": {
+                        "type": "string",
+                        "example": "Resource Not Found"
+                    },
+                    "status": {
+                        "type": "integer",
+                        "example": 404
+                    },
+                    "detail": {
+                        "type": "string",
+                        "example": "Der gesuchte Benutzer mit der ID a0eebc99... konnte nicht gefunden werden."
+                    },
+                    "instance": {
+                        "type": "string",
+                        "format": "uri",
+                        "example": "/users/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+                    }
+                }
+            }
+        },
+        "responses": {
+            "BadRequestError": {
+                "description": "Ungültige Anfrage / Parameter",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ApiError"
+                        }
+                    }
+                }
+            },
+            "NotFoundError": {
+                "description": "Die angeforderte Ressource wurde nicht gefunden",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ApiError"
+                        }
+                    }
+                }
+            },
+            "ValidationError": {
+                "description": "Validierungsfehler in den Request-Daten",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ApiError"
+                        }
+                    }
+                }
+            },
+            "InternalServerError": {
+                "description": "Unerwarteter Serverfehler",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "$ref": "#/components/schemas/ApiError"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+file_path = "openapi-demo-spec.json"
+with open(file_path, "w", encoding="utf-8") as f:
+    json.dump(openapi_spec, f, indent=2, ensure_ascii=False)
+
+print(f"File successfully created: {file_path}")
