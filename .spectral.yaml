@@ -1,0 +1,62 @@
+extends:
+  - "spectral:oas"
+  - "@stoplight/spectral-rulesets/rulesets/owasp-api"
+
+rules:
+  operation-description: error
+  path-keys-no-trailing-slash: error
+  openapi-tags: error
+  oas3-valid-schema-example: error
+
+  path-keys-kebab-case:
+    description: "URL-Pfade müssen in Kebab-Case geschrieben sein."
+    message: "Der Pfad {{property}} entspricht nicht dem Kebab-Case Muster."
+    severity: error
+    given: $.paths[*]~
+    then:
+      function: pattern
+      functionOptions:
+        match: "^/({[^}]+}|[a-z0-9-]+)(/({[^}]+}|[a-z0-9-]+))*$"
+
+  property-names-camel-case:
+    description: "Alle JSON-Properties müssen in camelCase geschrieben sein."
+    message: "Die Property '{{property}}' entspricht nicht dem camelCase Muster."
+    severity: error
+    given: "$.components.schemas..properties.*~"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  # 3. Path-Parameter: camelCase mit beliebiger Länge/Anzahl von Wörtern
+  path-params-camel-case:
+    description: "Path-Parameter müssen in camelCase geschrieben sein."
+    message: "Der Path-Parameter '{{property}}' entspricht nicht dem camelCase Muster."
+    severity: error
+    given: "$..parameters[?(@.in == 'path')].name"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  # 4. Query-Parameter: camelCase mit beliebiger Länge/Anzahl von Wörtern
+  query-params-camel-case:
+    description: "Query-Parameter müssen in camelCase geschrieben sein."
+    message: "Der Query-Parameter '{{property}}' entspricht nicht dem camelCase Muster."
+    severity: error
+    given: "$..parameters[?(@.in == 'query')].name"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  # 5. Schema-Namen: PascalCase mit beliebiger Länge/Anzahl von Wörtern
+  schema-names-pascal-case:
+    description: "Schema-Namen müssen in PascalCase geschrieben sein."
+    message: "Das Schema '{{property}}' entspricht nicht dem PascalCase Muster."
+    severity: error
+    given: "$.components.schemas.*~"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[A-Z][a-zA-Z0-9]*$"

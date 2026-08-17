@@ -636,7 +636,7 @@ openapi_spec = {
     }
 }
 
-file_path = "openapi-demo-spec.json"
+file_path = "openapi-spec.json"
 with open(file_path, "w", encoding="utf-8") as f:
     json.dump(openapi_spec, f, indent=2, ensure_ascii=False)
 

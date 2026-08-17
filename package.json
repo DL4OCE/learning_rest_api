@@ -4,10 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "mock": "prism mock openapi-demo.yaml",
-    "lint": "spectral lint openapi-demo.yaml",
-    "prepare": "husky"
+    "lint": "spectral lint openapi.yaml -r .spectral.yaml",
+    "mock": "prism mock openapi.yaml -p 4010",
+    "prepare": "husky",
+    "test:contract": "schemathesis run openapi.yaml --url http://127.0.0.1:4010 --phases examples --checks not_a_server_error",
+    "test:fuzz": "schemathesis run openapi.yaml --url http://127.0.0.1:4010 --checks all",
+    "docs:md": "widdershins openapi.yaml -o documentation/markdown/API.md --summary --code false --omitHeader",
+    "docs:redoc": "redocly build-docs openapi.yaml -o documentation/redoc/index.html",
+    "docs:swagger": "node -e 'const f=require(\"fs\"),p=require(\"path\"),y=require(\"js-yaml\"),s=y.load(f.readFileSync(\"openapi.yaml\",\"utf8\")),dir=\"documentation/swaggerUI\";f.mkdirSync(dir,{recursive:true});f.writeFileSync(p.join(dir,\"swaggerUI.html\"),`<!DOCTYPE html><html><head><meta charset=\"utf-8\"/><title>Swagger UI</title><link rel=\"stylesheet\" href=\"https://unpkg.com/swagger-ui-dist@5/swagger-ui.css\"/></head><body><div id=\"swagger-ui\"></div><script src=\"https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js\"></script><script>window.onload=()=>{SwaggerUIBundle({spec:${JSON.stringify(s)},dom_id:\"#swagger-ui\"})}</script></body></html>`)'",
+    "docs:all": "npm run docs:md && npm run docs:redoc && npm run docs:swagger",
+
+
+    "pipeline": "npm run lint && npm run test:contract && npm run docs:build"
   },
   "lint-staged": {
     "*.{yaml,yml}": [
@@ -26,7 +34,6 @@
     "js-yaml": "^5.3.0",
     "lint-staged": "^17.3.0",
     "redoc-cli": "^0.13.21",
-    "swagger-ui-watcher": "^2.1.14",
     "widdershins": "^4.0.1"
   }
 }
