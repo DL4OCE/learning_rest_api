@@ -22,8 +22,7 @@ rules:
       function: pattern
       functionOptions:
         match: "^/([a-z0-9-]+|{[a-zA-Z0-9_]+})*(/([a-z0-9-]+|{[a-zA-Z0-9_]+}))*$"
-
-
+        
   # Document location: $.paths (First path segment of the key)
   # Example: /users (plural) instead of /user (singular)
   path-keys-plural:
@@ -59,6 +58,7 @@ rules:
     description: "Query parameters (GET parameters) must be written in camelCase."
     message: "Query parameter '{{property}}' does not match camelCase format."
     severity: error
+    #given: "$.paths..parameters[?(@.in === 'query')]"
     given: "$.paths..parameters[?(@.in === 'query')].name"
     then:
       function: pattern

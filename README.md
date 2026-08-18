@@ -59,7 +59,9 @@ npx redocly build-docs openapi.yaml -o documentation/redoc/API.html
 *(npm install -D swagger-ui-watcher)*
 npm install -D @apidevtools/swagger-cli
 npm install -D js-yaml
-npx node -e 'const f=require("fs"),y=require("js-yaml"),s=y.load(f.readFileSync("openapi.yaml","utf8"));f.writeFileSync("documentation/swaggerUI/swaggerUI.html",`<!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"/></head><body><div id="swagger-ui"></div><script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script><script>window.onload=()=>{SwaggerUIBundle({spec:${JSON.stringify(s)},dom_id:"#swagger-ui"})}</script></body></html>`)'
+wget https://unpkg.com/swagger-ui-dist@5/swagger-ui.css
+wget https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js
+npx node -e 'const f=require("fs"),y=require("js-yaml"),s=y.load(f.readFileSync("openapi.yaml","utf8"));f.writeFileSync("documentation/swaggerUI/swaggerUI.html",`<!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" href="swagger-ui.css"/></head><body><div id="swagger-ui"></div><script src="swagger-ui-bundle.js"></script><script>window.onload=()=>{SwaggerUIBundle({spec:${JSON.stringify(s)},dom_id:"#swagger-ui"})}</script></body></html>`)'
 ```
 
 #### markdown
