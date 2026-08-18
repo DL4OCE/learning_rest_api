@@ -1,3 +1,21 @@
+---
+title: E-Commerce User & Order Management API v1.0.0
+language_tabs:
+  - shell: cURL
+  - javascript: JavaScript
+  - java: Java
+language_clients:
+  - shell: ""
+  - javascript: ""
+  - java: ""
+toc_footers: []
+includes: []
+search: true
+highlight_theme: darkula
+headingLevel: 2
+
+---
+
 <!-- Generator: Widdershins v4.0.1 -->
 
 <h1 id="e-commerce-user-and-order-management-api">E-Commerce User & Order Management API v1.0.0</h1>
@@ -26,6 +44,50 @@ Endpunkte zur Verwaltung von Benutzerkonten und Profilen
 <a id="opIdgetUsers"></a>
 
 > Code samples
+
+```shell
+# You can also use wget
+curl -X GET http://127.0.0.1:4010/users \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/users',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/users");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
 
 `GET /users`
 
@@ -86,6 +148,57 @@ This operation does not require authentication
 <a id="opIdcreateUser"></a>
 
 > Code samples
+
+```shell
+# You can also use wget
+curl -X POST http://127.0.0.1:4010/users \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+const inputBody = '{
+  "username": "johndoe",
+  "email": "john.doe@example.com",
+  "firstName": "John",
+  "lastName": "Doe"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/users',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/users");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
 
 `POST /users`
 
@@ -159,6 +272,50 @@ This operation does not require authentication
 
 > Code samples
 
+```shell
+# You can also use wget
+curl -X GET http://127.0.0.1:4010/users/{userId} \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/users/{userId}',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/users/{userId}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
 `GET /users/{userId}`
 
 Liefert die Details eines spezifischen Benutzers anhand seiner UUID.
@@ -202,6 +359,57 @@ This operation does not require authentication
 <a id="opIdupdateUser"></a>
 
 > Code samples
+
+```shell
+# You can also use wget
+curl -X PUT http://127.0.0.1:4010/users/{userId} \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+const inputBody = '{
+  "username": "johndoe_updated",
+  "email": "john.doe.updated@example.com",
+  "firstName": "John",
+  "lastName": "Doe"
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/users/{userId}',
+{
+  method: 'PUT',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/users/{userId}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("PUT");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
 
 `PUT /users/{userId}`
 
@@ -259,6 +467,50 @@ This operation does not require authentication
 
 > Code samples
 
+```shell
+# You can also use wget
+curl -X DELETE http://127.0.0.1:4010/users/{userId} \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/users/{userId}',
+{
+  method: 'DELETE',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/users/{userId}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("DELETE");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
 `DELETE /users/{userId}`
 
 Entfernt einen Benutzer dauerhaft aus dem System.
@@ -305,6 +557,50 @@ Endpunkte für den Produktkatalog und Inventarabfragen
 <a id="opIdgetProducts"></a>
 
 > Code samples
+
+```shell
+# You can also use wget
+curl -X GET http://127.0.0.1:4010/products \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/products',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/products");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
 
 `GET /products`
 
@@ -363,6 +659,50 @@ This operation does not require authentication
 
 > Code samples
 
+```shell
+# You can also use wget
+curl -X GET http://127.0.0.1:4010/products/{productId} \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/products/{productId}',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/products/{productId}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
 `GET /products/{productId}`
 
 Liefert die Einzelheiten eines spezifischen Produkts.
@@ -410,6 +750,50 @@ Endpunkte zur Erstellung und Verfolgung von Kundenbestellungen
 <a id="opIdgetOrders"></a>
 
 > Code samples
+
+```shell
+# You can also use wget
+curl -X GET http://127.0.0.1:4010/orders \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/orders',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/orders");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
 
 `GET /orders`
 
@@ -498,6 +882,61 @@ This operation does not require authentication
 
 > Code samples
 
+```shell
+# You can also use wget
+curl -X POST http://127.0.0.1:4010/orders \
+  -H 'Content-Type: application/json' \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+const inputBody = '{
+  "userId": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "items": [
+    {
+      "productId": "b5c1a8d0-1234-5678-90ab-cdef12345678",
+      "quantity": 2,
+      "unitPrice": 129.99
+    }
+  ]
+}';
+const headers = {
+  'Content-Type':'application/json',
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/orders',
+{
+  method: 'POST',
+  body: inputBody,
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/orders");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("POST");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
+
 `POST /orders`
 
 Erstellt eine neue Bestellung im System.
@@ -561,6 +1000,50 @@ This operation does not require authentication
 <a id="opIdgetOrderById"></a>
 
 > Code samples
+
+```shell
+# You can also use wget
+curl -X GET http://127.0.0.1:4010/orders/{orderId} \
+  -H 'Accept: application/json'
+
+```
+
+```javascript
+
+const headers = {
+  'Accept':'application/json'
+};
+
+fetch('http://127.0.0.1:4010/orders/{orderId}',
+{
+  method: 'GET',
+
+  headers: headers
+})
+.then(function(res) {
+    return res.json();
+}).then(function(body) {
+    console.log(body);
+});
+
+```
+
+```java
+URL obj = new URL("http://127.0.0.1:4010/orders/{orderId}");
+HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+con.setRequestMethod("GET");
+int responseCode = con.getResponseCode();
+BufferedReader in = new BufferedReader(
+    new InputStreamReader(con.getInputStream()));
+String inputLine;
+StringBuffer response = new StringBuffer();
+while ((inputLine = in.readLine()) != null) {
+    response.append(inputLine);
+}
+in.close();
+System.out.println(response.toString());
+
+```
 
 `GET /orders/{orderId}`
 

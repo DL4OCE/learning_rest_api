@@ -4,19 +4,21 @@
 
 VS Code plugins:
 
-* **Spectral (online verification against .spectral.yaml)**
-
-default rulesets:
->
->npm install -D @stoplight/spectral-rulesets
-
-#### local pre-commit linting
->npm install -D husky lint-staged
->npx husky init
-
-extend package.json:
+* **Spectral (live verification against .spectral.yaml)**
 
 ```
+# default rulesets:
+npm install -D @stoplight/spectral-rulesets
+```
+
+```
+# local pre-commit linting
+npm install -D husky lint-staged
+npx husky init
+```
+
+```
+# extend package.json
 {
   ...
   "scripts": {
@@ -32,14 +34,16 @@ extend package.json:
 }
 ```
 
->npx lint-staged
+```
+npx lint-staged
+```
 
 ## documentation generation / preview 
 
 #### OpenAPI (preview)
 * VS Code plugins
     * **OpenAPI (Swagger) Editor: Preview of SwaggerUI / Redoc; json / yaml; IntelliSense**
-    * **Swagger Viewer: Preview of Swagger / OpenAPI**
+    * (Swagger Viewer: Preview of Swagger / OpenAPI**)
     * (OpenAPI  Designer *(deprecated)*)
     * Redocly OpenAPI
     * (OpenAPI Editor *(deprecated)*)
@@ -58,9 +62,21 @@ npm install -D js-yaml
 npx node -e 'const f=require("fs"),y=require("js-yaml"),s=y.load(f.readFileSync("openapi.yaml","utf8"));f.writeFileSync("documentation/swaggerUI/swaggerUI.html",`<!DOCTYPE html><html><head><meta charset="utf-8"/><link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"/></head><body><div id="swagger-ui"></div><script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script><script>window.onload=()=>{SwaggerUIBundle({spec:${JSON.stringify(s)},dom_id:"#swagger-ui"})}</script></body></html>`)'
 ```
 
+#### markdown
+
+```
+npm install -D widdershins
+npx widdershins openapi.yaml -o documentation/markdown/API.md --summary --code false --omitHeader # --language_tabs 'shell:cURL' 'javascript:JavaScript' 'python:Python' 'php:PHP' 'java:Java'
+```
+
 ## mock server
 
 * **Prism**: run mock REST API server from openAPI.yaml, locally 
+
+```
+npm install -D @stoplight/prism-cli
+prism mock openapi.yaml -p 4010
+```
 
 ## Testing
 
@@ -77,23 +93,7 @@ st run openapi.yaml --url http://127.0.0.1:4010 --phases examples --checks not_a
 
 * Pact: test micro services by their REST APIs (overkill!)
 
-## markdown representation
 
-#### widdershins
-
-```
-npm install -D widdershins
-npx widdershins openapi.yaml -o documentation/markdown/API.md --summary --code false --omitHeader
-# 
-```
-
-```
-# nicer
-npx widdershins openapi.yaml -o documentation/markdown/API.md --language_tabs 'shell:cURL' 'javascript:JavaScript' 'python:Python' --summary
-
-# without code snippets:
-npx widdershins openapi.yaml -o documentation/markdown/API.md --summary --language_tabs '' --omitHeader
-```
 
 ## CI/CD automation
 

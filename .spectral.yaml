@@ -1,6 +1,5 @@
 extends:
   - "spectral:oas"
-  - "@stoplight/spectral-rulesets/rulesets/owasp-api"
 
 rules:
   operation-description: error
@@ -8,19 +7,73 @@ rules:
   openapi-tags: error
   oas3-valid-schema-example: error
 
+  # ============================================================================
+  # 1. URL PATHS (PATH KEYS)
+  # Document location: $.paths (Keys under `paths:`)
+  # Example: /user-profiles/{userId}
+  # ============================================================================
   path-keys-kebab-case:
-    description: "URL-Pfade müssen in Kebab-Case geschrieben sein."
-    message: "Der Pfad {{property}} entspricht nicht dem Kebab-Case Muster."
+    description: "URL paths must be written in kebab-case."
+    message: "The path '{{property}}' does not match kebab-case format."
     severity: error
-    given: $.paths[*]~
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^/([a-z0-9-]+|{[a-zA-Z0-9_]+})*(/([a-z0-9-]+|{[a-zA-Z0-9_]+}))*$"
+
+
+  # Document location: $.paths (First path segment of the key)
+  # Example: /users (plural) instead of /user (singular)
+  path-keys-plural:
+    description: "Main resources in paths should be pluralized."
+    message: "The first path segment '{{property}}' should be pluralized."
+    severity: warn
+    given: "$.paths"
+    then:
+      field: "@key"
+      function: pattern
+      functionOptions:
+        match: "^/([a-z0-9-]+(s|ies|es)|{[a-zA-Z0-9_]+})($|/)"
+
+  # ============================================================================
+  # 2. PARAMETERS (URL / QUERY / PATH)
+  # ============================================================================
+  
+  # Document location: $.paths..parameters[in=path] (Inside URL brackets {})
+  # Example: GET /users/{userId} -> 'userId' is in path
+  path-params-camel-case:
+    description: "Path parameters must be written in camelCase."
+    message: "Path parameter '{{property}}' does not match camelCase format."
+    severity: error
+    given: "$.paths..parameters[?(@.in === 'path')].name"
     then:
       function: pattern
       functionOptions:
-        match: "^/({[^}]+}|[a-z0-9-]+)(/({[^}]+}|[a-z0-9-]+))*$"
+        match: "^[a-z][a-zA-Z0-9]*$"
 
+  # Document location: $.paths..parameters[in=query] (GET parameters after '?')
+  # Example: GET /users?pageIndex=1&pageSize=10
+  query-params-camel-case:
+    description: "Query parameters (GET parameters) must be written in camelCase."
+    message: "Query parameter '{{property}}' does not match camelCase format."
+    severity: error
+    given: "$.paths..parameters[?(@.in === 'query')].name"
+    then:
+      function: pattern
+      functionOptions:
+        match: "^[a-z][a-zA-Z0-9]*$"
+
+  # ============================================================================
+  # 3. REQUEST / RESPONSE BODY & SCHEMAS
+  # ============================================================================
+
+  # Document location: $.components.schemas..properties (JSON object keys in payload)
+  # Example: { "firstName": "John", "lastName": "Doe" }
   property-names-camel-case:
-    description: "Alle JSON-Properties müssen in camelCase geschrieben sein."
-    message: "Die Property '{{property}}' entspricht nicht dem camelCase Muster."
+    description: "All JSON property names in payload/body must be written in camelCase."
+    message: "Property '{{property}}' does not match camelCase format."
     severity: error
     given: "$.components.schemas..properties.*~"
     then:
@@ -28,35 +81,56 @@ rules:
       functionOptions:
         match: "^[a-z][a-zA-Z0-9]*$"
 
-  # 3. Path-Parameter: camelCase mit beliebiger Länge/Anzahl von Wörtern
-  path-params-camel-case:
-    description: "Path-Parameter müssen in camelCase geschrieben sein."
-    message: "Der Path-Parameter '{{property}}' entspricht nicht dem camelCase Muster."
-    severity: error
-    given: "$..parameters[?(@.in == 'path')].name"
-    then:
-      function: pattern
-      functionOptions:
-        match: "^[a-z][a-zA-Z0-9]*$"
-
-  # 4. Query-Parameter: camelCase mit beliebiger Länge/Anzahl von Wörtern
-  query-params-camel-case:
-    description: "Query-Parameter müssen in camelCase geschrieben sein."
-    message: "Der Query-Parameter '{{property}}' entspricht nicht dem camelCase Muster."
-    severity: error
-    given: "$..parameters[?(@.in == 'query')].name"
-    then:
-      function: pattern
-      functionOptions:
-        match: "^[a-z][a-zA-Z0-9]*$"
-
-  # 5. Schema-Namen: PascalCase mit beliebiger Länge/Anzahl von Wörtern
+  # Document location: $.components.schemas (Names of data types/objects)
+  # Example: components/schemas/UserProfile
   schema-names-pascal-case:
-    description: "Schema-Namen müssen in PascalCase geschrieben sein."
-    message: "Das Schema '{{property}}' entspricht nicht dem PascalCase Muster."
+    description: "Schema names (data models) must be written in PascalCase."
+    message: "Schema name '{{property}}' does not match PascalCase format."
     severity: error
     given: "$.components.schemas.*~"
     then:
       function: pattern
       functionOptions:
         match: "^[A-Z][a-zA-Z0-9]*$"
+
+  # ============================================================================
+  # 4. HTTP METHODS, STATUS CODES & RESPONSE HEADERS
+  # ============================================================================
+
+  # Document location: $.paths..post.responses (Success response for POST)
+  # Example: POST /users -> Must define HTTP Status 201 Created
+  post-response-201:
+    description: "POST operations must define a 201 Created response."
+    message: "POST method is missing a 201 response status code."
+    severity: error
+    given: "$.paths[*].post.responses"
+    then:
+      field: "201"
+      function: defined
+
+  # Document location: $.paths..delete.responses (Success response for DELETE)
+  # Example: DELETE /users/{userId} -> Must define HTTP Status 200 or 204
+  delete-response-200-or-204:
+    description: "DELETE operations must return 200 OK or 204 No Content."
+    message: "DELETE method should define either a 200 or 204 response status code."
+    severity: error
+    given: "$.paths[*].delete.responses"
+    then:
+      function: schema
+      functionOptions:
+        schema:
+          type: object
+          anyOf:
+            - required: ["200"]
+            - required: ["204"]
+
+  # Document location: $.paths..responses[4xx/5xx].content (Error payload)
+  # Example: Content-Type for 400 Bad Request -> application/problem+json
+  error-response-rfc7807:
+    description: "Error responses (4xx/5xx) must use the application/problem+json content-type."
+    message: "Error response '{{property}}' should use media type 'application/problem+json'."
+    severity: warn
+    given: "$.paths[*][*].responses[?(@property >= 400 && @property < 600)].content"
+    then:
+      field: "application/problem+json"
+      function: defined

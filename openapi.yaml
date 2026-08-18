@@ -521,29 +521,28 @@ components:
           type: string
           format: uri-reference
           example: /users/a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11
-
   responses:
     BadRequestError:
       description: Ungültige Anfrage / Parameter
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ApiError"
     NotFoundError:
       description: Die angeforderte Ressource wurde nicht gefunden
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ApiError"
     ValidationError:
       description: Validierungsfehler in den Request-Daten
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ApiError"
     InternalServerError:
       description: Unerwarteter Serverfehler
       content:
-        application/json:
+        application/problem+json:
           schema:
             $ref: "#/components/schemas/ApiError"
